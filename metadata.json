@@ -1,0 +1,5 @@
+{
+  "name": "InsightFlow AI",
+  "description": "Upload your CSV or Excel files and let AI generate an interactive, data-driven dashboard with meaningful visualizations.",
+  "requestFramePermissions": []
+}
