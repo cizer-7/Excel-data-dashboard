@@ -36,7 +36,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
         useCORS: true,
         logging: false,
         backgroundColor: isDarkMode ? '#0f172a' : '#ffffff', // Background matches theme
-        ignoreElements: (element) => element.dataset.html2canvasIgnore === 'true'
+        ignoreElements: (element) => (element as HTMLElement).dataset?.html2canvasIgnore === 'true'
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -50,9 +50,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-      
+
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight) * 0.95; // Scale to fit page with margins
-      
+
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
       const imgY = 10;
 
@@ -69,16 +69,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
 
   const handleDownloadDataPDF = () => {
     const doc = new jsPDF();
-    
+
     // Add Summary/Title
     doc.setFontSize(18);
     doc.text(config.title, 14, 22);
-    
+
     doc.setFontSize(11);
     doc.setTextColor(100);
     const dateStr = new Date().toLocaleDateString();
     doc.text(`File: ${fileName} | Generated: ${dateStr}`, 14, 30);
-    
+
     // Prepare Data
     // We use filteredData to respect current view
     if (filteredData.length === 0) {
@@ -117,40 +117,40 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
             <div>
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">{config.title}</h1>
               <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 gap-2">
-                 <FileText className="w-3 h-3" />
-                 <span>{fileName}</span>
-                 <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                 <BarChart2 className="w-3 h-3" />
-                 <span>{filteredData.length} / {data.length} rows</span>
+                <FileText className="w-3 h-3" />
+                <span>{fileName}</span>
+                <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                <BarChart2 className="w-3 h-3" />
+                <span>{filteredData.length} / {data.length} rows</span>
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 pr-12 sm:pr-0">
-            <button 
-                onClick={handleDownloadPDF}
-                disabled={isDownloading}
-                className="flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isDownloading}
+              className="flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {isDownloading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                    <Download className="w-4 h-4" />
-                )}
-                {isDownloading ? 'Generating...' : 'Export Visuals'}
+              {isDownloading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              {isDownloading ? 'Generating...' : 'Export Visuals'}
             </button>
-            <button 
-                onClick={handleDownloadDataPDF}
-                className="flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            <button
+              onClick={handleDownloadDataPDF}
+              className="flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-                <FileText className="w-4 h-4" />
-                Export Data
+              <FileText className="w-4 h-4" />
+              Export Data
             </button>
-            <button 
-                onClick={onReset}
-                className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 px-4 py-2 rounded-lg transition-colors shadow-sm hover:shadow"
+            <button
+              onClick={onReset}
+              className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 px-4 py-2 rounded-lg transition-colors shadow-sm hover:shadow"
             >
-                New Analysis
+              New Analysis
             </button>
           </div>
         </div>
@@ -160,44 +160,44 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
       <div id="dashboard-content" className="bg-slate-50 dark:bg-slate-900 pb-8 transition-colors duration-300">
         {/* Summary Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-900 rounded-2xl p-6 sm:p-10 shadow-lg text-white">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-900 rounded-2xl p-6 sm:p-10 shadow-lg text-white">
             <h2 className="text-2xl font-bold mb-3">Executive Summary</h2>
             <p className="text-indigo-100 dark:text-indigo-200 text-lg leading-relaxed max-w-4xl opacity-90">
-                {config.summary}
+              {config.summary}
             </p>
-            </div>
+          </div>
         </div>
-        
+
         {/* Filter Section */}
         <div data-html2canvas-ignore="true" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-             <FilterPanel data={data} onFilterChange={handleFilterChange} />
+          <FilterPanel data={data} onFilterChange={handleFilterChange} />
         </div>
 
         {/* Charts Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            {filteredData.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-20 bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
-                    <p className="text-slate-500 dark:text-slate-400 font-medium">No data matches your filters.</p>
-                    <button 
-                        onClick={() => handleFilterChange(data)} 
-                        className="mt-2 text-indigo-600 dark:text-indigo-400 hover:underline text-sm"
-                    >
-                        Reset Filters
-                    </button>
+          {filteredData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-20 bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+              <p className="text-slate-500 dark:text-slate-400 font-medium">No data matches your filters.</p>
+              <button
+                onClick={() => handleFilterChange(data)}
+                className="mt-2 text-indigo-600 dark:text-indigo-400 hover:underline text-sm"
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 auto-rows-fr">
+              {config.charts.map((chartConfig) => (
+                <div key={chartConfig.id} className="min-h-[400px]">
+                  <ChartWidget
+                    config={chartConfig}
+                    data={filteredData}
+                    isDarkMode={isDarkMode}
+                  />
                 </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 auto-rows-fr">
-                {config.charts.map((chartConfig) => (
-                    <div key={chartConfig.id} className="min-h-[400px]">
-                    <ChartWidget 
-                        config={chartConfig} 
-                        data={filteredData}
-                        isDarkMode={isDarkMode}
-                    />
-                    </div>
-                ))}
-                </div>
-            )}
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
