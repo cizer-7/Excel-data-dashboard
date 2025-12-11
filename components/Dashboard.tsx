@@ -5,6 +5,7 @@ import { FilterPanel } from './FilterPanel';
 import { LayoutDashboard, FileText, BarChart2, Download, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -66,6 +67,40 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
     }
   };
 
+  const handleDownloadDataPDF = () => {
+    const doc = new jsPDF();
+    
+    // Add Summary/Title
+    doc.setFontSize(18);
+    doc.text(config.title, 14, 22);
+    
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    const dateStr = new Date().toLocaleDateString();
+    doc.text(`File: ${fileName} | Generated: ${dateStr}`, 14, 30);
+    
+    // Prepare Data
+    // We use filteredData to respect current view
+    if (filteredData.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    const tableColumn = Object.keys(filteredData[0]);
+    const tableRows = filteredData.map(row => Object.values(row));
+
+    // Generate Table
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows as any[],
+      startY: 35,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [79, 70, 229] }, // Indigo-600 match
+    });
+
+    doc.save(`${fileName.split('.')[0]}_data.pdf`);
+  };
+
   const handleFilterChange = (newData: DataRow[]) => {
     setFilteredData(newData);
   };
@@ -102,7 +137,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
                 ) : (
                     <Download className="w-4 h-4" />
                 )}
-                {isDownloading ? 'Generating...' : 'Export PDF'}
+                {isDownloading ? 'Generating...' : 'Export Visuals'}
+            </button>
+            <button 
+                onClick={handleDownloadDataPDF}
+                className="flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+                <FileText className="w-4 h-4" />
+                Export Data
             </button>
             <button 
                 onClick={onReset}
