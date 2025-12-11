@@ -5,7 +5,9 @@ import { FilterPanel } from './FilterPanel';
 import { LayoutDashboard, FileText, BarChart2, Download, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import 'jspdf-autotable';
+
+// ...
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -90,7 +92,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
     const tableRows = filteredData.map(row => Object.values(row));
 
     // Generate Table
-    autoTable(doc, {
+    (doc as any).autoTable({
       head: [tableColumn],
       body: tableRows as any[],
       startY: 35,
