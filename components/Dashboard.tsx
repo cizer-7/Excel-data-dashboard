@@ -5,7 +5,7 @@ import { FilterPanel } from './FilterPanel';
 import { LayoutDashboard, FileText, BarChart2, Download, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+
 
 // ...
 
@@ -69,7 +69,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
     }
   };
 
-  const handleDownloadDataPDF = () => {
+  const handleDownloadDataPDF = async () => {
     const doc = new jsPDF();
 
     // Add Summary/Title
@@ -82,7 +82,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
     doc.text(`File: ${fileName} | Generated: ${dateStr}`, 14, 30);
 
     // Prepare Data
-    // We use filteredData to respect current view
     if (filteredData.length === 0) {
       alert("No data to export");
       return;
@@ -91,16 +90,38 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, data, fileName, on
     const tableColumn = Object.keys(filteredData[0]);
     const tableRows = filteredData.map(row => Object.values(row));
 
-    // Generate Table
-    (doc as any).autoTable({
-      head: [tableColumn],
-      body: tableRows as any[],
-      startY: 35,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [79, 70, 229] }, // Indigo-600 match
-    });
+    try {
+      // Dynamic import to avoid breaking the main bundle if the library has issues
+      const autoTableModule = await import('jspdf-autotable');
+      const autoTable = autoTableModule.default || (autoTableModule as any);
 
-    doc.save(`${fileName.split('.')[0]}_data.pdf`);
+      // Sometimes it attaches to jsPDF prototype, sometimes it's a function.
+      // We check if it modified the prototype or if we need to call it.
+      if (typeof (doc as any).autoTable === 'function') {
+        (doc as any).autoTable({
+          head: [tableColumn],
+          body: tableRows as any[],
+          startY: 35,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [79, 70, 229] },
+        });
+      } else {
+        // Fallback if it exports a function directly (less common with this lib recent versions but possible)
+        autoTable(doc, {
+          head: [tableColumn],
+          body: tableRows as any[],
+          startY: 35,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [79, 70, 229] },
+        });
+      }
+
+      doc.save(`${fileName.split('.')[0]}_data.pdf`);
+
+    } catch (err) {
+      console.error("Failed to load autoTable or generate PDF", err);
+      alert("Could not generate PDF table. Please check console.");
+    }
   };
 
   const handleFilterChange = (newData: DataRow[]) => {
